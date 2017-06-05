@@ -11,7 +11,7 @@ import danielh1307.morestats.entity.Athlete;
 import danielh1307.morestats.loadData.util.StravaCommunicator;
 
 /**
- * Hello world!
+ * Main application.
  *
  */
 public class App {
@@ -23,11 +23,9 @@ public class App {
 
 	/**
 	 * 
-	 * @param args
-	 *            clientSecret, accessToken (if available)
-	 * @throws Exception
+	 * @param args Expected: [clientSecret, accessToken]
 	 */
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		comm = new StravaCommunicator();
 
 		if (EASY_ACCESS) {
@@ -47,7 +45,11 @@ public class App {
 
 	}
 
-	private static void authorize(String clientSecret) throws Exception {
+	/**
+	 * 
+	 * @param clientSecret client secret for OAuth2
+	 */
+	private static void authorize(String clientSecret) {
 		Scanner scanner = new Scanner(System.in);
 		LOGGER.info("Copy this to your browser and type in the resulting code");
 		LOGGER.info(

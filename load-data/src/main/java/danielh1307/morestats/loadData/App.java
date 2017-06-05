@@ -16,7 +16,7 @@ import danielh1307.morestats.loadData.util.StravaCommunicator;
  */
 public class App {
 
-	private static boolean EASY_ACCESS = true;
+	private static boolean EASY_ACCESS = false;
 	private static Logger LOGGER = LoggerFactory.getLogger(App.class);
 
 	private static StravaCommunicator comm;
@@ -49,8 +49,9 @@ public class App {
 
 	private static void authorize(String clientSecret) throws Exception {
 		Scanner scanner = new Scanner(System.in);
+		LOGGER.info("Copy this to your browser and type in the resulting code");
 		LOGGER.info(
-				"Copy this to your browser and type in the resulting code: http://www.strava.com/oauth/authorize?client_id=18287&redirect_uri=http://localhost/morestats/auth&response_type=code&scope=view_private");
+				"http://www.strava.com/oauth/authorize?client_id=18287&redirect_uri=http://localhost/morestats/auth&response_type=code&scope=view_private");
 		String code = scanner.next();
 		scanner.close();
 

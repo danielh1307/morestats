@@ -15,6 +15,25 @@
 	</properties>
 
 	<dependencies>
+		<!-- ****** -->
+		<!-- Spring -->
+		<!-- ****** -->
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-jpa</artifactId>
+			<version>1.11.3.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>5.2.10.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.1-901-1.jdbc4</version>
+		</dependency>
+
 		<!-- ****************** -->
 		<!-- Jersey and Jackson -->
 		<!-- ****************** -->

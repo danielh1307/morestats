@@ -4,6 +4,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -15,12 +20,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * 
  *
  */
+@Entity
+@Table(name = "ACTIVITY")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Activity extends BaseEntity {
 
+	@Column(name = "NAME")
 	@JsonProperty("name")
 	private String name;
 
+	@Transient
 	@JsonProperty("segment_efforts")
 	private Set<Segment> segments;
 	

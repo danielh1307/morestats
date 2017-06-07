@@ -1,5 +1,8 @@
 package danielh1307.morestats.entity;
 
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -7,8 +10,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Base entity with common attributes and methods.
  *
  */
+@MappedSuperclass
 public class BaseEntity {
 
+	@Id
 	@JsonProperty("id")
 	protected String id;
 	

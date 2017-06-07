@@ -5,10 +5,13 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import danielh1307.morestats.entity.Activity;
 import danielh1307.morestats.entity.Athlete;
 import danielh1307.morestats.loadData.util.StravaCommunicator;
+import danielh1307.morestats.repository.RepositoryController;
 
 /**
  * Main application.
@@ -16,16 +19,23 @@ import danielh1307.morestats.loadData.util.StravaCommunicator;
  */
 public class App {
 
-	private static boolean EASY_ACCESS = false;
+	private static boolean EASY_ACCESS = true;
 	private static Logger LOGGER = LoggerFactory.getLogger(App.class);
 
 	private static StravaCommunicator comm;
+	
 
 	/**
 	 * 
 	 * @param args Expected: [clientSecret, accessToken]
 	 */
 	public static void main(String[] args) {
+		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+		App main = new App();
+		main.start(args, ctx);
+	}
+	
+	private void start(String args[], ApplicationContext ctx) {
 		comm = new StravaCommunicator();
 
 		if (EASY_ACCESS) {
@@ -39,17 +49,21 @@ public class App {
 
 		Set<Activity> activities = comm.getActivitiesForCurrentAthlete(false);
 		LOGGER.info("There is a total of " + activities.size() + " activities");
+		RepositoryController repoController = ctx.getBean(RepositoryController.class);
 		for (Activity activity : activities) {
-			LOGGER.info(String.valueOf(activity));
+			repoController.save(activity);
 		}
-
+		
+		LOGGER.info("Getting an activity by name ...");
+		Activity activityByName = repoController.findByName("Mal wieder eine kleine Ausfahrt").iterator().next();
+		LOGGER.info(String.valueOf(activityByName));
 	}
 
 	/**
 	 * 
 	 * @param clientSecret client secret for OAuth2
 	 */
-	private static void authorize(String clientSecret) {
+	private void authorize(String clientSecret) {
 		Scanner scanner = new Scanner(System.in);
 		LOGGER.info("Copy this to your browser and type in the resulting code");
 		LOGGER.info(

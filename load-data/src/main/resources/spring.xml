@@ -22,12 +22,18 @@
 	<context:annotation-config />
 
 	<!-- Postgres datasource -->
+	<!-- <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource"> 
+		<property name="driverClassName" value="org.postgresql.Driver" /> <property 
+		name="url" value="jdbc:postgresql://localhost:5432/dev" /> <property name="username" 
+		value="postgres" /> <property name="password" value="appl_123" /> </bean> -->
+
+	<!-- H2 datasource -->
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-		<property name="driverClassName" value="org.postgresql.Driver" />
-		<property name="url" value="jdbc:postgresql://localhost:5432/dev" />
-		<property name="username" value="postgres" />
-		<property name="password" value="appl_123" />
+		<property name="driverClassName" value="org.h2.Driver" />
+		<property name="url" value="jdbc:h2:mem:mydb;DB_CLOSE_DELAY=-1" />
+		<property name="username" value="sa" />
+		<property name="password" value="" />
 	</bean>
 
 	<!-- EntityManagerFactory -->
@@ -39,7 +45,7 @@
 				<!-- if true tables are automatically generated in the database -->
 				<property name="generateDdl" value="true" />
 				<property name="showSql" value="true" />
-				<property name="databasePlatform" value="org.hibernate.dialect.PostgreSQLDialect" />
+				<property name="databasePlatform" value="org.hibernate.dialect.H2Dialect" />
 			</bean>
 		</property>
 	</bean>

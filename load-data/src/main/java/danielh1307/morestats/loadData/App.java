@@ -5,7 +5,11 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import danielh1307.morestats.entity.Activity;
@@ -17,6 +21,9 @@ import danielh1307.morestats.repository.RepositoryController;
  * Main application.
  *
  */
+@ComponentScan
+@EnableAutoConfiguration
+@SpringBootApplication
 public class App {
 
 	private static boolean EASY_ACCESS = true;
@@ -30,9 +37,10 @@ public class App {
 	 * @param args Expected: [clientSecret, accessToken]
 	 */
 	public static void main(String[] args) {
-		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
-		App main = new App();
-		main.start(args, ctx);
+//		ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
+//		App main = new App();
+//		main.start(args, ctx);
+		SpringApplication.run(App.class, args);
 	}
 	
 	private void start(String args[], ApplicationContext ctx) {

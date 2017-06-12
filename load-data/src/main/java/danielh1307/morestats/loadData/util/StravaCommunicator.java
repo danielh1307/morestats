@@ -49,6 +49,7 @@ public class StravaCommunicator {
 		mapper = new ObjectMapper();
 	}
 
+
 	/**
 	 * This method authorizes the user via OAuth2 at Strava.
 	 * 

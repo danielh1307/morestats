@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Hello WebSocket</title>
+<link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+<link href="/main.css" rel="stylesheet" />
+<script src="/webjars/jquery/jquery.min.js"></script>
+<script src="/webjars/sockjs-client/sockjs.min.js"></script>
+<script src="/webjars/stomp-websocket/stomp.min.js"></script>
+<script src="/app.js"></script>
+</head>
+<body onload="javascript:connect()">
+	<div class="col-md-6">
+		<form class="form-inline">
+			<button id="send" class="btn btn-default" type="submit">Load
+				data</button>
+		</form>
+		<div class="row">
+			<div class="col-md-12">
+				<table id="conversation" class="table table-striped">
+					<thead>
+						<tr>
+							<th>Data</th>
+						</tr>
+					</thead>
+					<tbody id="data">
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

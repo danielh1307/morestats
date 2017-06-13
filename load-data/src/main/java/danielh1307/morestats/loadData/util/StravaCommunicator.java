@@ -8,6 +8,7 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,21 +24,18 @@ import danielh1307.morestats.entity.Segment;
  * 
  * This class communicates with the REST API of Strava.
  * 
- * Please note you have to call
- * {@link StravaCommunicator#setAccessToken(String, String)} to authorize before
- * this class can be used. This makes the class stateful.
  *
  */
+@Component
 public class StravaCommunicator {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(StravaCommunicator.class);
 	private static final String CLIENT_ID = "18287";
+	private static String CLIENT_SECRET;
 
 	private ObjectMapper mapper;
 	private WebResource resource;
 	private WebResource apiResource;
-
-	private String accessToken;
 
 	/**
 	 * Default constructor.
@@ -48,49 +46,44 @@ public class StravaCommunicator {
 		apiResource = resource.path("api").path("v3");
 		mapper = new ObjectMapper();
 	}
+	
+	/**
+	 * 
+	 * @param clientSecret sets the client secret. Without this, the class from this class are not working.
+	 */
+	public static void setClientSecret(String clientSecret) {
+		CLIENT_SECRET = clientSecret;
+	}
 
 
 	/**
-	 * This method authorizes the user via OAuth2 at Strava.
+	 * This method authorizes the user via OAuth2 at Strava and returns the access token.
 	 * 
 	 * 
-	 * @param clientSecret
-	 *            the client secret.
 	 * @param code
 	 *            the code to exchange the access token.
-	 * @return the URI to authorize.
+	 * @return the access token.
 	 */
-	public void authorize(String clientSecret, String code) {
-		// http://www.strava.com/oauth/authorize?client_id=18287&redirect_uri=http://localhost/morestats/auth&response_type=code&scope=view_private
-
+	public String getAccessToken(String code) {
 		String responseString = resource.path("oauth").path("token").queryParam("client_id", CLIENT_ID)
-				.queryParam("client_secret", clientSecret).queryParam("code", code).post(String.class);
+				.queryParam("client_secret", CLIENT_SECRET).queryParam("code", code).post(String.class);
 		try {
-			accessToken = omitQuotes(mapper.readTree(responseString).get("access_token"));
+			String accessToken = omitQuotes(mapper.readTree(responseString).get("access_token"));
 			LOGGER.info("Access token is: " + accessToken);
+			return accessToken;
 		} catch (Exception ex) {
 			throw handleCheckedException(ex);
 		}
 	}
 
 	/**
-	 * This method can be called if an access token is already available, use
-	 * {@link StravaCommunicator#authorize(String, String)} instead.
-	 * 
-	 * @param accessToken
-	 *            the access token.
-	 */
-	public void authorizeWithAccessToken(String accessToken) {
-		this.accessToken = accessToken;
-	}
-
-	/**
 	 * Returns the {@link Athlete} object of the currently signed in athlete.
 	 * 
+	 * @param accessToken the access token.
 	 * @return the {@link Athlete} which represents the currently signed in
 	 *         athlete.
 	 */
-	public Athlete getCurrentAthlete() {
+	public Athlete getCurrentAthlete(String accessToken) {
 		String responseString = apiResource.path("athlete").queryParam("access_token", accessToken).get(String.class);
 		try {
 			return mapper.readValue(responseString, Athlete.class);
@@ -102,11 +95,12 @@ public class StravaCommunicator {
 	/**
 	 * Returns all the {@link Activity} of the currently signed in athlete.
 	 * 
+	 * @param accessToken the access token.
 	 * @param withSegments
 	 *            true if {@link Segment} are added to the {@link Activity}.
 	 * @return all the {@link Activity} of the currently signed in athlete.
 	 */
-	public Set<Activity> getActivitiesForCurrentAthlete(boolean withSegments) {
+	public Set<Activity> getActivitiesForCurrentAthlete(String accessToken, boolean withSegments) {
 		Set<Activity> activities = new HashSet<Activity>();
 
 		// pagination

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +24,7 @@ import danielh1307.morestats.loadData.util.TokenContainer;
 
 @Controller
 @RequestMapping("/")
-public class LoadDataController {
+public class LoadDataController implements LoadDataListener {
 
 	private static Logger LOGGER = LoggerFactory.getLogger(LoadDataController.class);
 
@@ -33,6 +34,9 @@ public class LoadDataController {
 
 	@Value("${server.port}")
 	private String port;
+	
+	@Autowired
+	private SimpMessagingTemplate messagingTemplate;
 
 	private final StravaCommunicator stravaComm;
 
@@ -60,10 +64,6 @@ public class LoadDataController {
 	public ModelAndView auth(@RequestParam("code") String code) {
 		String accessToken = stravaComm.getAccessToken(code);
 		LOGGER.info("Successfully logged in with accessToken [" + accessToken + "]");
-		// return "You are now logged in. <a href=\"" + HOST + ":" + port +
-		// "/morestats/loaddata?accessToken="
-		// + accessToken + "\">Load your data</a>";
-		// muss Referenz auf loadData.html zurückschicken
 		return new ModelAndView("loadData");
 
 	}
@@ -71,13 +71,16 @@ public class LoadDataController {
 	@MessageMapping("/loaddata")
 	@SendTo("/topic/data")
 	public ResponseString getData(TokenContainer tokenContainer) {
-		LOGGER.info("Method getData called");
 		Athlete athlete = stravaComm.getCurrentAthlete(tokenContainer.getAccessToken());
 		Set<Activity> activitiesForCurrentAthlete = stravaComm
-				.getActivitiesForCurrentAthlete(tokenContainer.getAccessToken(), false);
-		LOGGER.info("Returning getData");
+				.getActivitiesForCurrentAthlete(tokenContainer.getAccessToken(), true, this);
 		return new ResponseString(
 				"Loaded data for athlete " + athlete + " and " + activitiesForCurrentAthlete.size() + " activities");
+	}
+	
+	@Override
+	public void activityLoaded(String message) {
+		messagingTemplate.convertAndSend("/topic/data", new ResponseString(message));
 	}
 
 }

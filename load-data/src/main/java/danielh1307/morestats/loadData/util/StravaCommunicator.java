@@ -19,6 +19,7 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
 import danielh1307.morestats.entity.Activity;
 import danielh1307.morestats.entity.Athlete;
 import danielh1307.morestats.entity.Segment;
+import danielh1307.morestats.loadData.LoadDataListener;
 
 /**
  * 
@@ -46,18 +47,20 @@ public class StravaCommunicator {
 		apiResource = resource.path("api").path("v3");
 		mapper = new ObjectMapper();
 	}
-	
+
 	/**
 	 * 
-	 * @param clientSecret sets the client secret. Without this, the class from this class are not working.
+	 * @param clientSecret
+	 *            sets the client secret. Without this, the class from this
+	 *            class are not working.
 	 */
 	public static void setClientSecret(String clientSecret) {
 		CLIENT_SECRET = clientSecret;
 	}
 
-
 	/**
-	 * This method authorizes the user via OAuth2 at Strava and returns the access token.
+	 * This method authorizes the user via OAuth2 at Strava and returns the
+	 * access token.
 	 * 
 	 * 
 	 * @param code
@@ -79,7 +82,8 @@ public class StravaCommunicator {
 	/**
 	 * Returns the {@link Athlete} object of the currently signed in athlete.
 	 * 
-	 * @param accessToken the access token.
+	 * @param accessToken
+	 *            the access token.
 	 * @return the {@link Athlete} which represents the currently signed in
 	 *         athlete.
 	 */
@@ -95,12 +99,14 @@ public class StravaCommunicator {
 	/**
 	 * Returns all the {@link Activity} of the currently signed in athlete.
 	 * 
-	 * @param accessToken the access token.
+	 * @param accessToken
+	 *            the access token.
 	 * @param withSegments
 	 *            true if {@link Segment} are added to the {@link Activity}.
 	 * @return all the {@link Activity} of the currently signed in athlete.
 	 */
-	public Set<Activity> getActivitiesForCurrentAthlete(String accessToken, boolean withSegments) {
+	public Set<Activity> getActivitiesForCurrentAthlete(String accessToken, boolean withSegments,
+			LoadDataListener listener) {
 		Set<Activity> activities = new HashSet<Activity>();
 
 		// pagination
@@ -128,6 +134,9 @@ public class StravaCommunicator {
 			if (withSegments) {
 				for (Activity activity : activities) {
 					LOGGER.info("Getting segments for activity ... " + activity);
+					if (listener != null) {
+						listener.activityLoaded("Loading segments for activity " + activity);
+					}
 					String responseString = apiResource.path("activities").path(activity.getId())
 							.queryParam("access_token", accessToken).get(String.class);
 					JsonNode segmentEfforts = mapper.readTree(responseString).get("segment_efforts");

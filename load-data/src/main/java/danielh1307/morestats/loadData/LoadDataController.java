@@ -21,6 +21,7 @@ import danielh1307.morestats.entity.Athlete;
 import danielh1307.morestats.loadData.util.ResponseString;
 import danielh1307.morestats.loadData.util.StravaCommunicator;
 import danielh1307.morestats.loadData.util.TokenContainer;
+import danielh1307.morestats.repository.ActivityRepository;
 
 @Controller
 @RequestMapping("/")
@@ -37,6 +38,9 @@ public class LoadDataController implements LoadDataListener {
 	
 	@Autowired
 	private SimpMessagingTemplate messagingTemplate;
+	
+	@Autowired
+	private ActivityRepository activityRepository;
 
 	private final StravaCommunicator stravaComm;
 
@@ -73,7 +77,8 @@ public class LoadDataController implements LoadDataListener {
 	public ResponseString getData(TokenContainer tokenContainer) {
 		Athlete athlete = stravaComm.getCurrentAthlete(tokenContainer.getAccessToken());
 		Set<Activity> activitiesForCurrentAthlete = stravaComm
-				.getActivitiesForCurrentAthlete(tokenContainer.getAccessToken(), true, this);
+				.getActivitiesForCurrentAthlete(tokenContainer.getAccessToken(), false, this);
+		activityRepository.save(activitiesForCurrentAthlete);
 		return new ResponseString(
 				"Loaded data for athlete " + athlete + " and " + activitiesForCurrentAthlete.size() + " activities");
 	}

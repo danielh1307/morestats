@@ -48,18 +48,9 @@
 
 		<!-- ********* -->
 		<!-- Hibernate -->
-		<!-- ********* -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-core</artifactId>
-			<!-- FIXME: Error if we do not override the version here -->
-			<version>5.2.10.Final</version>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
-			<!-- FIXME: Error if we do not override the version here -->
-			<version>5.2.10.Final</version>
+			<artifactId>hibernate-entitymanager</artifactId>		
 		</dependency>
 
 		<!-- ******* -->

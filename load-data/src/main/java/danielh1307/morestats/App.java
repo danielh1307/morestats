@@ -1,4 +1,4 @@
-package danielh1307.morestats.loadData;
+package danielh1307.morestats;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

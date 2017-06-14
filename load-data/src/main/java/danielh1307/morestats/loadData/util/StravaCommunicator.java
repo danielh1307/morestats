@@ -2,6 +2,7 @@ package danielh1307.morestats.loadData.util;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.ws.rs.core.UriBuilder;
@@ -19,29 +20,40 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
 import danielh1307.morestats.entity.Activity;
 import danielh1307.morestats.entity.Athlete;
 import danielh1307.morestats.entity.Segment;
-import danielh1307.morestats.loadData.LoadDataListener;
 
 /**
  * 
  * This class communicates with the REST API of Strava.
  * 
- *
+ * Please note the client secret must be known before instantiating is possible,
+ * so call {@link StravaCommunicator#setClientSecret(String)} before using this
+ * class.
  */
 @Component
 public class StravaCommunicator {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(StravaCommunicator.class);
 	private static final String CLIENT_ID = "18287";
-	private static String CLIENT_SECRET;
+	private static String clientSecret;
 
 	private ObjectMapper mapper;
 	private WebResource resource;
 	private WebResource apiResource;
+	
+	private Optional<StravaCommunicatorListener> listener;
 
 	/**
-	 * Default constructor.
+	 * Default constructor. {@link StravaCommunicator#setClientSecret(String)}
+	 * must be called, otherwise the class cannot be instantiated.
+	 * 
 	 */
 	public StravaCommunicator() {
+		if (clientSecret == null) {
+			String errMsg = "client secret is null, set this first before using this class";
+			LOGGER.error(errMsg);
+			throw new RuntimeException(errMsg);
+		}
+		
 		Client client = Client.create(new DefaultClientConfig());
 		resource = client.resource(UriBuilder.fromUri("https://www.strava.com").build());
 		apiResource = resource.path("api").path("v3");
@@ -51,16 +63,30 @@ public class StravaCommunicator {
 	/**
 	 * 
 	 * @param clientSecret
-	 *            sets the client secret. Without this, the class from this
-	 *            class are not working.
+	 *            sets the client secret. The value cannot be changed later.
 	 */
-	public static void setClientSecret(String clientSecret) {
-		CLIENT_SECRET = clientSecret;
+	public static void setClientSecret(String cs) {
+		if (clientSecret != null) {
+			String errMsg = "client secret is already set: [" + clientSecret + "], it is not possible to change it";
+			LOGGER.error(errMsg);
+			throw new RuntimeException(errMsg);
+		}
+		clientSecret = cs;
+	}
+	
+	/**
+	 * TODO: make a list of listener and this class a singleton.
+	 * 
+	 * @param listener a listener for events happening during the communication with Strava.
+	 */
+	public void setListener(StravaCommunicatorListener listener) {
+		this.listener = Optional.ofNullable(listener);
 	}
 
 	/**
-	 * This method authorizes the user via OAuth2 at Strava and returns the
-	 * access token.
+	 * This method authorizes the user with a given code against Strava. The
+	 * access token, which can be used for all further communication, is
+	 * returned.
 	 * 
 	 * 
 	 * @param code
@@ -69,7 +95,7 @@ public class StravaCommunicator {
 	 */
 	public String getAccessToken(String code) {
 		String responseString = resource.path("oauth").path("token").queryParam("client_id", CLIENT_ID)
-				.queryParam("client_secret", CLIENT_SECRET).queryParam("code", code).post(String.class);
+				.queryParam("client_secret", clientSecret).queryParam("code", code).post(String.class);
 		try {
 			String accessToken = omitQuotes(mapper.readTree(responseString).get("access_token"));
 			LOGGER.info("Access token is: " + accessToken);
@@ -80,7 +106,7 @@ public class StravaCommunicator {
 	}
 
 	/**
-	 * Returns the {@link Athlete} object of the currently signed in athlete.
+	 * Returns the {@link Athlete} object of the currently signed in athlete associated with the given access token.
 	 * 
 	 * @param accessToken
 	 *            the access token.
@@ -97,7 +123,7 @@ public class StravaCommunicator {
 	}
 
 	/**
-	 * Returns all the {@link Activity} of the currently signed in athlete.
+	 * Returns all the {@link Activity} of the currently signed in athlete associated with the given access token.
 	 * 
 	 * @param accessToken
 	 *            the access token.
@@ -105,8 +131,7 @@ public class StravaCommunicator {
 	 *            true if {@link Segment} are added to the {@link Activity}.
 	 * @return all the {@link Activity} of the currently signed in athlete.
 	 */
-	public Set<Activity> getActivitiesForCurrentAthlete(String accessToken, boolean withSegments,
-			LoadDataListener listener) {
+	public Set<Activity> getActivitiesForCurrentAthlete(String accessToken, boolean withSegments) {
 		Set<Activity> activities = new HashSet<Activity>();
 
 		// pagination
@@ -124,9 +149,12 @@ public class StravaCommunicator {
 				if (mapper.readTree(responseString).get(0) == null) {
 					break;
 				}
-
 				Activity[] readValue = mapper.readValue(responseString, Activity[].class);
-				activities.addAll(Arrays.asList(readValue));
+				Set<Activity> newActivities = new HashSet<Activity>(Arrays.asList(readValue));
+				activities.addAll(newActivities);
+				if (listener.isPresent()) {
+					listener.get().activitiesLoaded(newActivities);
+				}
 				startPage++;
 			}
 
@@ -134,14 +162,16 @@ public class StravaCommunicator {
 			if (withSegments) {
 				for (Activity activity : activities) {
 					LOGGER.info("Getting segments for activity ... " + activity);
-					if (listener != null) {
-						listener.activityLoaded("Loading segments for activity " + activity);
-					}
+
 					String responseString = apiResource.path("activities").path(activity.getId())
 							.queryParam("access_token", accessToken).get(String.class);
 					JsonNode segmentEfforts = mapper.readTree(responseString).get("segment_efforts");
 					Segment[] segments = mapper.readValue(segmentEfforts.toString(), Segment[].class);
-					activity.addSegments(new HashSet<Segment>(Arrays.asList(segments)));
+					Set<Segment> newSegments = new HashSet<Segment>(Arrays.asList(segments));
+					activity.addSegments(newSegments);
+					if (listener.isPresent()) {
+						listener.get().segmentsLoaded(activity, newSegments);
+					}
 				}
 			}
 
@@ -155,7 +185,7 @@ public class StravaCommunicator {
 	 * Removes leading and trailing quotes of a string.
 	 * 
 	 * @param s
-	 * @return
+	 * @return the given string without leading and trailing quotes.
 	 */
 	private String omitQuotes(JsonNode node) {
 		String s = node.toString();

@@ -18,14 +18,16 @@ import org.springframework.web.servlet.ModelAndView;
 
 import danielh1307.morestats.entity.Activity;
 import danielh1307.morestats.entity.Athlete;
+import danielh1307.morestats.entity.Segment;
 import danielh1307.morestats.loadData.util.ResponseString;
 import danielh1307.morestats.loadData.util.StravaCommunicator;
+import danielh1307.morestats.loadData.util.StravaCommunicatorListener;
 import danielh1307.morestats.loadData.util.TokenContainer;
 import danielh1307.morestats.repository.ActivityRepository;
 
 @Controller
 @RequestMapping("/")
-public class LoadDataController implements LoadDataListener {
+public class LoadDataController implements StravaCommunicatorListener {
 
 	private static Logger LOGGER = LoggerFactory.getLogger(LoadDataController.class);
 
@@ -47,6 +49,7 @@ public class LoadDataController implements LoadDataListener {
 	@Autowired
 	public LoadDataController(StravaCommunicator stravaComm) {
 		this.stravaComm = stravaComm;
+		this.stravaComm.setListener(this);
 	}
 
 	@RequestMapping("/morestats")
@@ -77,15 +80,24 @@ public class LoadDataController implements LoadDataListener {
 	public ResponseString getData(TokenContainer tokenContainer) {
 		Athlete athlete = stravaComm.getCurrentAthlete(tokenContainer.getAccessToken());
 		Set<Activity> activitiesForCurrentAthlete = stravaComm
-				.getActivitiesForCurrentAthlete(tokenContainer.getAccessToken(), false, this);
+				.getActivitiesForCurrentAthlete(tokenContainer.getAccessToken(), true);
+		// TODO: fire domain event
 		activityRepository.save(activitiesForCurrentAthlete);
 		return new ResponseString(
 				"Loaded data for athlete " + athlete + " and " + activitiesForCurrentAthlete.size() + " activities");
 	}
 	
 	@Override
-	public void activityLoaded(String message) {
-		messagingTemplate.convertAndSend("/topic/data", new ResponseString(message));
+	public void activitiesLoaded(Set<Activity> activity) {
+		String msg = "Loaded [" + activity.size() + "] new activities";
+		messagingTemplate.convertAndSend("/topic/data", new ResponseString(msg));
+	}
+	
+	@Override
+	public void segmentsLoaded(Activity activity, Set<Segment> segments) {
+		String msg = "Loaded [" + segments.size() + "] segments for activity [" + activity + "]";
+		messagingTemplate.convertAndSend("/topic/data", new ResponseString(msg));
+		
 	}
 
 }

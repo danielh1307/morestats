@@ -8,6 +8,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * 
  * Base entity with common attributes and methods.
+ * 
+ * TODO: probably add equals() and hashCode() to this class.
  *
  */
 @MappedSuperclass

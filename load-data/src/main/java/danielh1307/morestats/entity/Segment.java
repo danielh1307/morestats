@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * 
  * @see https://strava.github.io/api/v3/segments/
  *
+ * Two segments are regarded as equal objects if they have the same id.
  */
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class Segment extends BaseEntity {

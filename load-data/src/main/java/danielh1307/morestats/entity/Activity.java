@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * 
  * @see https://strava.github.io/api/v3/activities/
  * 
- *
+ * Two activities are regarded as equal objects if they have the same id.
  */
 @Entity
 @Table(name = "ACTIVITY")

@@ -12,7 +12,7 @@ function connect() {
 }
 
 function loadData() {
-	stompClient.send("/morestats/loaddata", {}, JSON.stringify({'accessToken': '188bfde4c361c4659816c06030ef11dc2638a6de'}));
+	stompClient.send("/morestats/loaddata", {}, JSON.stringify({'accessToken': document.getElementById('accessToken').value}));
 }
 
 function showData(message) {

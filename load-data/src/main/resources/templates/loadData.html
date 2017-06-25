@@ -12,6 +12,7 @@
 <body onload="javascript:connect()">
 	<div class="col-md-6">
 		<form class="form-inline">
+			<input type="hidden" th:value="${accessToken}" id="accessToken" name="accessToken"/>
 			<button id="send" class="btn btn-default" type="submit">Load
 				data</button>
 		</form>

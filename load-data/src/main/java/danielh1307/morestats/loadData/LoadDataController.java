@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import danielh1307.morestats.entity.Activity;
 import danielh1307.morestats.entity.Athlete;
@@ -71,7 +72,7 @@ public class LoadDataController implements StravaCommunicatorListener {
 	public ModelAndView auth(@RequestParam("code") String code) {
 		String accessToken = stravaComm.getAccessToken(code);
 		LOGGER.info("Successfully logged in with accessToken [" + accessToken + "]");
-		return new ModelAndView("loadData");
+		return new ModelAndView("loadData", "accessToken", accessToken);
 
 	}
 
@@ -80,7 +81,7 @@ public class LoadDataController implements StravaCommunicatorListener {
 	public ResponseString getData(TokenContainer tokenContainer) {
 		Athlete athlete = stravaComm.getCurrentAthlete(tokenContainer.getAccessToken());
 		Set<Activity> activitiesForCurrentAthlete = stravaComm
-				.getActivitiesForCurrentAthlete(tokenContainer.getAccessToken(), true);
+				.getActivitiesForCurrentAthlete(tokenContainer.getAccessToken(), false);
 		// TODO: fire domain event
 		activityRepository.save(activitiesForCurrentAthlete);
 		return new ResponseString(

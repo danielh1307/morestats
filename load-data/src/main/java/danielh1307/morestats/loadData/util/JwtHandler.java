@@ -14,11 +14,11 @@ import io.jsonwebtoken.Jwts;
  *
  */
 @Component
-public class JwtTokenFactory {
+public class JwtHandler {
 	
 	private byte[] signingKey;
 	
-	public JwtTokenFactory() {
+	public JwtHandler() {
 		// TODO: put this into a resource file
 		signingKey = "myKey".getBytes(StandardCharsets.UTF_8);
 	}

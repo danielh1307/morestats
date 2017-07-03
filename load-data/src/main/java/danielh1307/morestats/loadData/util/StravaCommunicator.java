@@ -17,9 +17,9 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 
-import danielh1307.morestats.entity.Activity;
-import danielh1307.morestats.entity.Athlete;
-import danielh1307.morestats.entity.Segment;
+import danielh1307.morestats.loadData.entity.Activity;
+import danielh1307.morestats.loadData.entity.Athlete;
+import danielh1307.morestats.loadData.entity.Segment;
 
 /**
  * 

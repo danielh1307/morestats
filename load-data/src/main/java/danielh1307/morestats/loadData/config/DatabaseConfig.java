@@ -1,4 +1,4 @@
-package danielh1307.morestats.config;
+package danielh1307.morestats.loadData.config;
 
 import java.util.Properties;
 

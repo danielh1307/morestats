@@ -18,11 +18,22 @@ import io.jsonwebtoken.SignatureAlgorithm;
  */
 @Component
 public class JwtTokenFactory {
+	
+	private byte[] signingKey;
+	
+	public JwtTokenFactory() {
+		// TODO: put this into a resource file
+		signingKey = "myKey".getBytes(StandardCharsets.UTF_8);
+	}
 
+	/**
+	 * Creates a JWT with the given access token and the athlete name.
+	 * 
+	 * @param stravaAccessToken the access token for Strava.
+	 * @param athleteName the name of the athlete the token is assigned to.
+	 * @return a JWT which includes the given parameters.
+	 */
 	public String createToken(String stravaAccessToken, String athleteName) {
-		
-		byte[] signingKey = "myKey".getBytes(StandardCharsets.UTF_8);
-
 		Claims claims = Jwts.claims();
 		claims.put("stravaAccessToken", stravaAccessToken);
 		claims.put("athleteName", athleteName);

@@ -1,4 +1,4 @@
-package danielh1307.morestats.auth;
+package danielh1307.morestats.auth.controller;
 
 import javax.servlet.http.HttpSession;
 

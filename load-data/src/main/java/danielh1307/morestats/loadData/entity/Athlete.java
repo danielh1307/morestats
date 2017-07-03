@@ -1,4 +1,4 @@
-package danielh1307.morestats.entity;
+package danielh1307.morestats.loadData.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

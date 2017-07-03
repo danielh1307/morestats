@@ -1,4 +1,4 @@
-package danielh1307.morestats.entity;
+package danielh1307.morestats.loadData.entity;
 
 import java.util.Collections;
 import java.util.HashSet;

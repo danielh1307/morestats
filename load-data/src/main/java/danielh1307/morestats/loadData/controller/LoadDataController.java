@@ -1,4 +1,4 @@
-package danielh1307.morestats.loadData;
+package danielh1307.morestats.loadData.controller;
 
 import java.util.Set;
 
@@ -15,15 +15,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import danielh1307.morestats.entity.Activity;
-import danielh1307.morestats.entity.Athlete;
-import danielh1307.morestats.entity.Segment;
-import danielh1307.morestats.loadData.util.JwtTokenFactory;
+import danielh1307.morestats.loadData.entity.Activity;
+import danielh1307.morestats.loadData.entity.Athlete;
+import danielh1307.morestats.loadData.entity.Segment;
+import danielh1307.morestats.loadData.repository.ActivityRepository;
+import danielh1307.morestats.loadData.util.JwtHandler;
 import danielh1307.morestats.loadData.util.ResponseString;
 import danielh1307.morestats.loadData.util.StravaCommunicator;
 import danielh1307.morestats.loadData.util.StravaCommunicatorListener;
 import danielh1307.morestats.loadData.util.TokenContainer;
-import danielh1307.morestats.repository.ActivityRepository;
 
 @Controller
 @RequestMapping("/")
@@ -42,7 +42,7 @@ public class LoadDataController implements StravaCommunicatorListener {
 	private ActivityRepository activityRepository;
 	
 	@Autowired
-	private JwtTokenFactory tokenFactory;
+	private JwtHandler tokenFactory;
 
 	private final StravaCommunicator stravaComm;
 

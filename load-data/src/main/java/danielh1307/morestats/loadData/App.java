@@ -1,4 +1,4 @@
-package danielh1307.morestats;
+package danielh1307.morestats.loadData;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

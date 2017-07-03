@@ -1,4 +1,4 @@
-package danielh1307.morestats.loadData;
+package danielh1307.morestats.loadData.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

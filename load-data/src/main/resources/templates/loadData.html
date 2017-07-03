@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Hello WebSocket</title>
+<title>morestats - Load your data (loaddata SCS)</title>
 <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
 <link href="/main.css" rel="stylesheet" />
 <script src="/webjars/jquery/jquery.min.js"></script>
@@ -12,7 +12,7 @@
 <body onload="javascript:connect()">
 	<div class="col-md-6">
 		<form class="form-inline">
-			<input type="hidden" th:value="${jwtToken}" id="jwtToken" name="jwtToken"/>
+			<input type="hidden" data-th-value="${jwtToken}" id="jwtToken" name="jwtToken"/>
 			<button id="send" class="btn btn-default" type="submit">Load
 				data</button>
 		</form>

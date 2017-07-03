@@ -2,8 +2,8 @@ package danielh1307.morestats.loadData.util;
 
 import java.util.Set;
 
-import danielh1307.morestats.entity.Activity;
-import danielh1307.morestats.entity.Segment;
+import danielh1307.morestats.loadData.entity.Activity;
+import danielh1307.morestats.loadData.entity.Segment;
 
 /**
  * 

@@ -33,8 +33,6 @@ import danielh1307.morestats.entity.Segment;
 public class StravaCommunicator {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(StravaCommunicator.class);
-	private static final String CLIENT_ID = "18287";
-	private static String clientSecret;
 
 	private ObjectMapper mapper;
 	private WebResource resource;
@@ -47,31 +45,11 @@ public class StravaCommunicator {
 	 * must be called, otherwise the class cannot be instantiated.
 	 * 
 	 */
-	public StravaCommunicator() {
-		if (clientSecret == null) {
-			String errMsg = "client secret is null, set this first before using this class";
-			LOGGER.error(errMsg);
-			throw new RuntimeException(errMsg);
-		}
-		
+	public StravaCommunicator() {		
 		Client client = Client.create(new DefaultClientConfig());
 		resource = client.resource(UriBuilder.fromUri("https://www.strava.com").build());
 		apiResource = resource.path("api").path("v3");
 		mapper = new ObjectMapper();
-	}
-
-	/**
-	 * 
-	 * @param clientSecret
-	 *            sets the client secret. The value cannot be changed later.
-	 */
-	public static void setClientSecret(String cs) {
-		if (clientSecret != null) {
-			String errMsg = "client secret is already set: [" + clientSecret + "], it is not possible to change it";
-			LOGGER.error(errMsg);
-			throw new RuntimeException(errMsg);
-		}
-		clientSecret = cs;
 	}
 	
 	/**
@@ -81,28 +59,6 @@ public class StravaCommunicator {
 	 */
 	public void setListener(StravaCommunicatorListener listener) {
 		this.listener = Optional.ofNullable(listener);
-	}
-
-	/**
-	 * This method authorizes the user with a given code against Strava. The
-	 * access token, which can be used for all further communication, is
-	 * returned.
-	 * 
-	 * 
-	 * @param code
-	 *            the code to exchange the access token.
-	 * @return the access token.
-	 */
-	public String getAccessToken(String code) {
-		String responseString = resource.path("oauth").path("token").queryParam("client_id", CLIENT_ID)
-				.queryParam("client_secret", clientSecret).queryParam("code", code).post(String.class);
-		try {
-			String accessToken = omitQuotes(mapper.readTree(responseString).get("access_token"));
-			LOGGER.info("Access token is: " + accessToken);
-			return accessToken;
-		} catch (Exception ex) {
-			throw handleCheckedException(ex);
-		}
 	}
 
 	/**
@@ -179,24 +135,6 @@ public class StravaCommunicator {
 		} catch (Exception ex) {
 			throw handleCheckedException(ex);
 		}
-	}
-
-	/**
-	 * Removes leading and trailing quotes of a string.
-	 * 
-	 * @param s
-	 * @return the given string without leading and trailing quotes.
-	 */
-	private String omitQuotes(JsonNode node) {
-		String s = node.toString();
-		if (s.startsWith("\"")) {
-			s = s.substring(1);
-		}
-		if (s.endsWith("\"")) {
-			s = s.substring(0, s.length() - 1);
-		}
-
-		return s;
 	}
 
 	/**

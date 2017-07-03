@@ -28,6 +28,7 @@ public class StravaCommunicator {
 	private static String clientSecret;
 
 	private ObjectMapper mapper;
+	private WebResource apiResource;
 	private WebResource resource;
 
 	/**
@@ -41,12 +42,13 @@ public class StravaCommunicator {
 			LOGGER.error(errMsg);
 			throw new RuntimeException(errMsg);
 		}
-		
+
 		Client client = Client.create(new DefaultClientConfig());
 		resource = client.resource(UriBuilder.fromUri("https://www.strava.com").build());
+		apiResource = resource.path("api").path("v3");
 		mapper = new ObjectMapper();
 	}
-	
+
 	/**
 	 * 
 	 * @param clientSecret
@@ -81,6 +83,23 @@ public class StravaCommunicator {
 		} catch (Exception ex) {
 			throw handleCheckedException(ex);
 		}
+	}
+
+	/**
+	 * 
+	 * @param accessToken
+	 *            the Strava access token.
+	 * @return the name of the athlete the token is assigned to.
+	 */
+	public String getNameOfAthlete(String accessToken) {
+		String responseString = apiResource.path("athlete").queryParam("access_token", accessToken).get(String.class);
+		try {
+			JsonNode node = mapper.readTree(responseString);
+			return node.get("username").asText();
+		} catch (Exception ex) {
+			throw handleCheckedException(ex);
+		}
+
 	}
 
 	/**

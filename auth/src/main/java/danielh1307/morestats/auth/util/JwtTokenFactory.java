@@ -19,12 +19,13 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Component
 public class JwtTokenFactory {
 
-	public String createToken(String stravaAccessToken) {
+	public String createToken(String stravaAccessToken, String athleteName) {
 		
 		byte[] signingKey = "myKey".getBytes(StandardCharsets.UTF_8);
 
 		Claims claims = Jwts.claims();
 		claims.put("stravaAccessToken", stravaAccessToken);
+		claims.put("athleteName", athleteName);
 
 		LocalDateTime now = LocalDateTime.now();
 		LocalDateTime nowPlus5Minutes = now.plusMinutes(5L);

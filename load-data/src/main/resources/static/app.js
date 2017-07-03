@@ -12,8 +12,7 @@ function connect() {
 }
 
 function loadData() {
-	var url = new URL(window.location.href);
-	stompClient.send("/morestats/getdata", {}, JSON.stringify({'accessToken': url.searchParams.get("jwt")}));
+	stompClient.send("/morestats/getdata", {}, JSON.stringify({'jwt': document.getElementById('jwtToken').value}));
 }
 
 function showData(message) {

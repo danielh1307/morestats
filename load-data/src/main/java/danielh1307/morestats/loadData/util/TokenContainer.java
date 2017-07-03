@@ -1,23 +1,42 @@
 package danielh1307.morestats.loadData.util;
 
+/**
+ * 
+ * Simple container class which holds the JSON Web Token.
+ *
+ */
 public class TokenContainer {
 	
-	private String accessToken;
+	private String jwt;
 	
+	/**
+	 * Empty constructor, needed for Jackson.
+	 */
 	public TokenContainer() {
-		
-	}
-	
-	public TokenContainer(String accessToken) {
-		this.accessToken = accessToken;
 	}
 
-	public String getAccessToken() {
-		return accessToken;
+	/**
+	 * 
+	 * @param jwt the JSON Web Token.
+	 */
+	public TokenContainer(String jwt) {
+		this.jwt = jwt;
 	}
 
-	public void setAccessToken(String accessToken) {
-		this.accessToken = accessToken;
+	/**
+	 * 
+	 * @return the JSON Web Token.
+	 */
+	public String getJwt() {
+		return jwt;
+	}
+
+	/**
+	 * 
+	 * @param accessToken the JSON Web Token.
+	 */
+	public void setJwt(String jwt) {
+		this.jwt = jwt;
 	}
 	
 	

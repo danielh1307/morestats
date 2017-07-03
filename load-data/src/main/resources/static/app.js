@@ -16,7 +16,7 @@ function loadData() {
 }
 
 function showData(message) {
-    $("#data").append("<tr><td>" + message + "</td></tr>");
+    $("#data").text(message);
 }
 
 $(function () {

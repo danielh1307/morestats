@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Load your data (load-data SCS)</title>
+    <script
+            src="https://code.jquery.com/jquery-3.2.1.js"
+            integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+            crossorigin="anonymous"></script>
+    <script src="/loadStravaData.js"/>
+</head>
+<body>
+Das Token ist: <p th:text="${athlete.jwtToken}"/>
+Der Athlet heisst: <p th:text="${athlete.name}" />
+<input type="submit" onClick="getDataFromStrava()" value="Daten von Strava laden"/>
+<input type="submit" onClick="" value="Daten ansehen"/>
+</body>
+</html>

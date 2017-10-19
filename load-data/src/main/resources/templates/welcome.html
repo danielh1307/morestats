@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Willkommen</title>
+</head>
+<body>
+Willkommen zu morestats: <a th:href="${authScs.host} + '/morestats/authorize?origin-url=' + ${authScs.originUrl}">Anmelden</a>
+</body>
+</html>

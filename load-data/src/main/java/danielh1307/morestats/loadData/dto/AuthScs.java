@@ -1,4 +1,4 @@
-package danielh1307.morestats.loadData.danielh1307.morestats.loadData.dto;
+package danielh1307.morestats.loadData.dto;
 
 public class AuthScs {
 

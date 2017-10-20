@@ -1,20 +1,32 @@
 function getDataFromStrava() {
+    // we want to avoid double click
+    $("#getDataFromStrava").prop("disabled", true);
+
     // call endpoint /getData
     // we use POST here since we are sending a message body and "put" new resources to the server
     $.ajax({
         type: "POST",
-        url: "http://localhost:8080/getData", // TODO: host must be determined automatically
+        url: "http://localhost:8080/morestats/getStravaData", // TODO: host must be determined automatically
         data: JSON.stringify({
             jwt: getUrlParameter("jwt")
         }),
         contentType: "application/json; charset=utf-8"
-    }).done(function(data) {alert(data)});
+    }).done(function(data) {
+                alert(data);
+                $("#getDataFromStrava").prop("disabled", false);
+                });
 
 }
 
-function getCurrentData() {
-    // call endpoint /current
-}
+//function getData() {
+//    $.ajax({
+//        type: "GET",
+//        url: "http://localhost:8080/morestats/activity", // TODO: host must be determined automatically
+//        beforeSend: function(xhr) {
+//            xhr.setRequestHeader("Authorization", "JWT " + getUrlParameter("jwt"));
+//        }.done(function(data) {return true;})
+//    });
+//}
 
 /**
  * Returns an URL parameter.

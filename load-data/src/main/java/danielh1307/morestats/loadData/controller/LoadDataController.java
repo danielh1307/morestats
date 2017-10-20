@@ -2,8 +2,9 @@ package danielh1307.morestats.loadData.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import danielh1307.morestats.loadData.danielh1307.morestats.loadData.dto.AthleteDto;
-import danielh1307.morestats.loadData.danielh1307.morestats.loadData.dto.AuthScs;
+import danielh1307.morestats.loadData.dto.AthleteDto;
+import danielh1307.morestats.loadData.dto.AuthScs;
+import danielh1307.morestats.loadData.dto.WriteStoreTotal;
 import danielh1307.morestats.loadData.entity.Activity;
 import danielh1307.morestats.loadData.entity.Athlete;
 import danielh1307.morestats.loadData.entity.Segment;
@@ -87,7 +88,7 @@ public class LoadDataController implements StravaCommunicatorListener {
      * @return a result string.
      * @throws IOException if an error occurs.
      */
-    @RequestMapping(method = RequestMethod.POST, value = "/getData")
+    @RequestMapping(method = RequestMethod.POST, value = "/morestats/getStravaData")
     @ResponseBody
     public String getDataFromStrava(@RequestBody String jwt) throws IOException {
         JsonNode jsonNode = mapper.readTree(jwt);
@@ -102,15 +103,22 @@ public class LoadDataController implements StravaCommunicatorListener {
         Set<Activity> activitiesForCurrentAthlete = stravaComm.getActivitiesForCurrentAthlete(stravaAccessToken, false);
         // TODO: fire domain event
         activityRepository.save(activitiesForCurrentAthlete);
-        return "Es wurden " + activitiesForCurrentAthlete.size() + " Aktivitäten geladen";
+        return "Es wurden " + activitiesForCurrentAthlete.size() + " Aktivitäten in den write-store geladen";
     }
 
-    @RequestMapping("/current")
-    public ModelAndView getCurrentData(@RequestBody String jwt) {
-        // we just return the current number of activities
-        return new ModelAndView("current", "numOfActivies", activityRepository.count());
-    }
+    @RequestMapping(method = RequestMethod.GET, value="/morestats/activity/{jwt:.+}")
+    public ModelAndView getActivity(@PathVariable String jwt) {
+        LOGGER.info("Token is " + jwt);
 
+        // get all activities for the current athlete
+        String stravaAccessToken = tokenFactory.getStravaAccessToken(jwt);
+        Athlete athlete = stravaComm.getCurrentAthlete(stravaAccessToken);
+        LOGGER.info("Get all write store data for athlete " + athlete);
+
+        WriteStoreTotal total = new WriteStoreTotal(activityRepository.count(), 0, jwt);
+
+        return new ModelAndView("writeStoreTotal", "writeStore", total);
+    }
 
     @Override
     public void activitiesLoaded(Set<Activity> activity) {

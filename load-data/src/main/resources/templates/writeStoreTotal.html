@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Current</title>
+</head>
+<body>
+    <p>Hier sind deine Daten:</p>
+    <p>Geladene Aktivitäten: <span th:text="${writeStore.numOfActivities}"/></p>
+    <p>Geladene Segmente: </p>
+    <a th:href="'http://localhost:8080/morestats/loadStravaData?jwt=' + ${writeStore.jwt}">Mehr Daten laden</a>
+</body>
+</html>

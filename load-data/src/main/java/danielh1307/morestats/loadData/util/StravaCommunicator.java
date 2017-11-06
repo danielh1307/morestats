@@ -24,10 +24,7 @@ import danielh1307.morestats.loadData.entity.Segment;
 /**
  * 
  * This class communicates with the REST API of Strava.
- * 
- * Please note the client secret must be known before instantiating is possible,
- * so call {@link StravaCommunicator#setClientSecret(String)} before using this
- * class.
+ *
  */
 @Component
 public class StravaCommunicator {
@@ -41,8 +38,7 @@ public class StravaCommunicator {
 	private Optional<StravaCommunicatorListener> listener;
 
 	/**
-	 * Default constructor. {@link StravaCommunicator#setClientSecret(String)}
-	 * must be called, otherwise the class cannot be instantiated.
+	 * Default constructor.
 	 * 
 	 */
 	public StravaCommunicator() {		
@@ -50,6 +46,7 @@ public class StravaCommunicator {
 		resource = client.resource(UriBuilder.fromUri("https://www.strava.com").build());
 		apiResource = resource.path("api").path("v3");
 		mapper = new ObjectMapper();
+		listener = Optional.empty();
 	}
 	
 	/**

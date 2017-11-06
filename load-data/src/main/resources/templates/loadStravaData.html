@@ -12,7 +12,8 @@
 <body>
 Das Token ist: <p th:text="${athlete.jwtToken}"/>
 Der Athlet heisst: <p th:text="${athlete.name}" />
-<input type="submit" id="getDataFromStrava" onClick="getDataFromStrava()" value="Daten von Strava laden"/>
+<input type="submit" id="getDataFromStravaJ" onClick="getDataFromStravaWithJson()" value="Daten von Strava laden (JWT via JSON)"/><br/>
+<input type="submit" id="getDataFromStravaH" onClick="getDataFromStravaWithHeader()" value="Daten von Strava laden (JWT via HTTP header)"/><br/>
 <a id="getData" th:href="'http://localhost:8080/morestats/activity/' + ${athlete.jwtToken}">Aktuelle write-store Daten ansehen</a>
 </body>
 </html>

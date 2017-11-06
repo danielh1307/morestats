@@ -1,17 +1,13 @@
 package danielh1307.morestats.loadData.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import danielh1307.morestats.loadData.dto.AthleteDto;
 import danielh1307.morestats.loadData.dto.AuthScs;
 import danielh1307.morestats.loadData.dto.WriteStoreTotal;
 import danielh1307.morestats.loadData.entity.Activity;
 import danielh1307.morestats.loadData.entity.Athlete;
-import danielh1307.morestats.loadData.entity.Segment;
 import danielh1307.morestats.loadData.repository.ActivityRepository;
 import danielh1307.morestats.loadData.util.JwtHandler;
 import danielh1307.morestats.loadData.util.StravaCommunicator;
-import danielh1307.morestats.loadData.util.StravaCommunicatorListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,31 +16,29 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.io.IOException;
-import java.util.Set;
-
 @Controller
 @RequestMapping("/")
-public class LoadDataController implements StravaCommunicatorListener {
+public class WebController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LoadDataController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WebController.class);
+
     private static final String LOAD_DATA_HOST = "http://localhost:8080";
     private static final String SUCC_AUTH_PATH = "/morestats/loadStravaData";
-    private final StravaCommunicator stravaComm;
-    private final ObjectMapper mapper;
 
     @Value("${auth.url}")
     private String authScs;
-    @Autowired
-    private ActivityRepository activityRepository;
+
     @Autowired
     private JwtHandler tokenFactory;
 
+    private final StravaCommunicator stravaComm;
+
     @Autowired
-    public LoadDataController(StravaCommunicator stravaComm) {
+    private ActivityRepository activityRepository;
+
+    @Autowired
+    public WebController(StravaCommunicator stravaComm) {
         this.stravaComm = stravaComm;
-        this.stravaComm.setListener(this);
-        this.mapper = new ObjectMapper();
     }
 
     /**
@@ -81,32 +75,7 @@ public class LoadDataController implements StravaCommunicatorListener {
         return new ModelAndView("loadStravaData", "athlete", dto);
     }
 
-    /**
-     * This method loads data for activities and segments from Strava and persists them to the local database.
-     *
-     * @param jwt the JSON web token.
-     * @return a result string.
-     * @throws IOException if an error occurs.
-     */
-    @RequestMapping(method = RequestMethod.POST, value = "/morestats/getStravaData")
-    @ResponseBody
-    public String getDataFromStrava(@RequestBody String jwt) throws IOException {
-        JsonNode jsonNode = mapper.readTree(jwt);
-        String token = jsonNode.get("jwt").textValue();
-        LOGGER.info("JWT token is " + token);
-
-        String stravaAccessToken = tokenFactory.getStravaAccessToken(token);
-        LOGGER.info("Strava access token is: " + stravaAccessToken);
-        LOGGER.info("Name of the athlete is: " + tokenFactory.getAthleteName(token));
-
-        Athlete athlete = stravaComm.getCurrentAthlete(stravaAccessToken);
-        Set<Activity> activitiesForCurrentAthlete = stravaComm.getActivitiesForCurrentAthlete(stravaAccessToken, false);
-        // TODO: fire domain event
-        activityRepository.save(activitiesForCurrentAthlete);
-        return "Es wurden " + activitiesForCurrentAthlete.size() + " Aktivitäten in den write-store geladen";
-    }
-
-    @RequestMapping(method = RequestMethod.GET, value="/morestats/activity/{jwt:.+}")
+    @RequestMapping(method = RequestMethod.GET, value = "/morestats/activity/{jwt:.+}")
     public ModelAndView getActivity(@PathVariable String jwt) {
         LOGGER.info("Token is " + jwt);
 
@@ -115,20 +84,16 @@ public class LoadDataController implements StravaCommunicatorListener {
         Athlete athlete = stravaComm.getCurrentAthlete(stravaAccessToken);
         LOGGER.info("Get all write store data for athlete " + athlete);
 
-        WriteStoreTotal total = new WriteStoreTotal(activityRepository.count(), 0, jwt);
+        int numOfSegments = 0;
+        Iterable<Activity> activities = activityRepository.findAll();
+        for (Activity a : activities) {
+            numOfSegments += a.getSegments().size();
+        }
+
+        LOGGER.info("Number of segments are " + numOfSegments);
+        WriteStoreTotal total = new WriteStoreTotal(activityRepository.count(), numOfSegments, jwt);
 
         return new ModelAndView("writeStoreTotal", "writeStore", total);
     }
 
-    @Override
-    public void activitiesLoaded(Set<Activity> activity) {
-        String msg = "Loaded [" + activity.size() + "] new activities";
-        LOGGER.info(msg);
-    }
-
-    @Override
-    public void segmentsLoaded(Activity activity, Set<Segment> segments) {
-        String msg = "Loaded [" + segments.size() + "] segments for activity [" + activity + "]";
-        LOGGER.info(msg);
-    }
 }

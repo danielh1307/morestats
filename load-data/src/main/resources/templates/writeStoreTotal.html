@@ -7,7 +7,7 @@
 <body>
     <p>Hier sind deine Daten:</p>
     <p>Geladene Aktivitäten: <span th:text="${writeStore.numOfActivities}"/></p>
-    <p>Geladene Segmente: </p>
+    <p>Geladene Segmente: <span th:text="${writeStore.numOfSegments}"/></p>
     <a th:href="'http://localhost:8080/morestats/loadStravaData?jwt=' + ${writeStore.jwt}">Mehr Daten laden</a>
 </body>
 </html>

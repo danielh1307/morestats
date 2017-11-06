@@ -17,7 +17,7 @@ public interface StravaCommunicatorListener {
 	/**
 	 * This method is called whenever some {@link Activity} were successfully loaded.
 	 * 
-	 * @param loadedActivity the loaded set of {@link Activity}.
+	 * @param loadedActivities the loaded set of {@link Activity}.
 	 */
 	public void activitiesLoaded(Set<Activity> loadedActivities);
 	

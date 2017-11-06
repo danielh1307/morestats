@@ -51,7 +51,7 @@ public class StravaCommunicator {
 
 	/**
 	 * 
-	 * @param clientSecret
+	 * @param cs
 	 *            sets the client secret. The value cannot be changed later.
 	 */
 	public static void setClientSecret(String cs) {
